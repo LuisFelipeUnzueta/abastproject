@@ -13,7 +13,7 @@ class AuthProvider extends ChangeNotifier {
 
   final _url = 'https://identitytoolkit.googleapis.com/v1/';
   final _resource = 'accounts:'; // signUp // signInWithPassword
-  final _apiKey = '?key=AIzaSyDIbQcdHXo2G3musrB5M62A9-lM5hiniRA';
+  final _apiKey = '?key=AIzaSyDv6H9ZsnQnYpzQmUwTclXFlwJ5obZZrJ0';
 
   Future<bool> authRequest(String email, String password, String action) async {
     String sUri = '$_url$_resource$action$_apiKey';
