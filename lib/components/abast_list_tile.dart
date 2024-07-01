@@ -5,10 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/abast_provider.dart';
 
 class AbastListTile extends StatelessWidget {
-  const AbastListTile(
-    this.abast, {
-    super.key,
-  });
+  const AbastListTile(this.abast, {super.key});
 
   final Abastecimento abast;
 
@@ -20,34 +17,49 @@ class AbastListTile extends StatelessWidget {
     String quantLitros = abast.quantidadeLitros.toStringAsFixed(2);
     String autonomia = abast.autonomia().toStringAsFixed(2);
     String valorPorLitro = abast.valorPorLitro().toStringAsFixed(2);
+
     return ListTile(
       leading: IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () {
-          abastProvider.delete(abast);
-        },
+        icon: const Icon(Icons.delete, color: Colors.purple),
+        onPressed: () => abastProvider.delete(abast),
       ),
-      title: Text('R\$ $valorTotal'),
-      subtitle: Text('$quantLitros L'),
-      trailing: Column(
-        children: [
-          Text('${abast.id}'),
-          Text('$autonomia km/l'),
-          Text('R\$ $valorPorLitro'),
-        ],
+      title: Text(
+        'R\$ $valorTotal',
+        style: const TextStyle(color: Colors.purple),
       ),
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          'details_screen',
-          arguments: abast,
-        );
-        // Navigator.push(context,
-        //   MaterialPageRoute(builder: (context) {
-        //     return DetailsScreen();
-        //   })
-        // );
-      },
+      subtitle: Text(
+        '$quantLitros L',
+        style: const TextStyle(color: Colors.purpleAccent),
+      ),
+      trailing: buildTrailingInfo(),
+      onTap: () => Navigator.pushNamed(
+        context,
+        'details_screen',
+        arguments: abast,
+      ),
+    );
+  }
+
+  Widget buildTrailingInfo() {
+    String autonomia = abast.autonomia().toStringAsFixed(2);
+    String valorPorLitro = abast.valorPorLitro().toStringAsFixed(2);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '${abast.id}',
+          style: const TextStyle(color: Colors.purple),
+        ),
+        Text(
+          '$autonomia km/l',
+          style: const TextStyle(color: Colors.purple),
+        ),
+        Text(
+          'R\$ $valorPorLitro',
+          style: const TextStyle(color: Colors.purple),
+        ),
+      ],
     );
   }
 }

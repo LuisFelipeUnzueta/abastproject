@@ -39,10 +39,15 @@ class MainApp extends StatelessWidget {
         title: 'Auto Control Panel',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent)),
+          primaryColor: Colors.purple,
+          hintColor: Colors.purpleAccent,
+          colorScheme:
+              ColorScheme.fromSwatch().copyWith(secondary: Colors.purple),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.purple,
+          ),
+        ),
         routes: {
-          // Registrando as possíveis rotas,
           Routes.SIGNIN: (context) => SigninScreen(),
           Routes.SIGNUP: (context) => SignupScreen(),
           Routes.SIGNUPPICTURE: (context) => const SignUpPictureScreen(),

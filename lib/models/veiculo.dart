@@ -19,23 +19,4 @@ class Veiculo {
         'modelo': modelo,
         'ano': ano,
       };
-
-  /* static Veiculo fromJson(Map<String, dynamic> json) {
-    Veiculo veiculo = Veiculo(
-      json['placa'],
-      json['marca'],
-      json['modelo'],
-      json['ano'],
-    );
-    veiculo.id = json['id'];
-    return veiculo;
-  } */
 }
-
-
-// -O-cUeButT9i_7u7Arit: {
-//    ano: 2024, 
-//    marca: marca, 
-//    modelo: modelo, 
-//    placa: xpt1o23
-// }

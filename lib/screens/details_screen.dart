@@ -15,44 +15,56 @@ class DetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.purple,
         title: const Text("Detalhes"),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Row(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          elevation: 8,
+          shadowColor: Colors.purpleAccent,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Valor Total: "),
-                Text('R\$ $valorTotal'),
+                buildDetailRow('Valor Total:', 'R\$ $valorTotal'),
+                buildDetailRow('Quant. Litros:', '$quantidadeLitros L'),
+                buildDetailRow('Km rodada:', '$quilometragem km'),
+                buildDetailRow('Autonomia:', '$autonomia km/l'),
+                buildDetailRow('Valor por litro:', 'R\$ $valorPorLitro \$/l'),
               ],
             ),
-            Row(
-              children: [
-                const Text("Quant. Litros: "),
-                Text('$quantidadeLitros L'),
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Km rodada: "),
-                Text('$quilometragem km'),
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Autonomia: "),
-                Text('$autonomia km/l'),
-              ],
-            ),
-            Row(
-              children: [
-                const Text("Valor por litro: "),
-                Text('$valorPorLitro \$/l'),
-              ],
-            ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.purple,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.purpleAccent,
+            ),
+          ),
+        ],
       ),
     );
   }

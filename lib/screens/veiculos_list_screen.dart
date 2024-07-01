@@ -12,32 +12,57 @@ class VeiculosListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Veículos"),
+        backgroundColor: Colors.purple,
       ),
-      drawer: const DrawerMenu(),
+      drawer: const DrawerMenu(), // Substitua pelo seu DrawerMenu, se houver
       body: FutureBuilder(
         future: VeiculosService.getList(),
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot<List<Veiculo>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              // return Text(snapshot.data!.length.toString());
               List<Veiculo> veiculos = snapshot.data!;
               return ListView.builder(
                 itemCount: veiculos.length,
                 itemBuilder: (context, index) {
                   Veiculo veiculo = veiculos[index];
-                  return ListTile(
-                    title: Text(veiculo.placa),
-                    subtitle: Text(veiculo.id!),
+                  return Card(
+                    elevation: 4,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ListTile(
+                      title: Text(
+                        veiculo.placa,
+                        style: const TextStyle(
+                            color: Colors.purple, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        veiculo.id!,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      onTap: () {
+                        // Implemente a navegação para detalhes do veículo, se necessário
+                      },
+                    ),
                   );
                 },
               );
             } else if (snapshot.hasError) {
-              return Text("Erro: ${snapshot.error.toString()}");
+              return Center(
+                child: Text(
+                  "Erro: ${snapshot.error.toString()}",
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
             } else {
-              return const Text("Nenhum veículo cadastrado!");
+              return const Center(
+                child: Text("Nenhum veículo cadastrado!",
+                    style: TextStyle(color: Colors.grey)),
+              );
             }
           } else {
-            return const CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),

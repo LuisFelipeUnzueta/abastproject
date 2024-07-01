@@ -17,50 +17,121 @@ class SigninScreen extends StatelessWidget {
     String? message = authProvider.message;
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            child: TextField(
-              key: const Key('textFieldSigninEmail'),
-              controller: emailController,
-              decoration: const InputDecoration(
-                label: Text("email"),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              elevation: 8,
+              shadowColor: Colors.purpleAccent,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    buildTextField(
+                      controller: emailController,
+                      label: 'Email',
+                      icon: Icons.email,
+                      key: const Key('textFieldSigninEmail'),
+                    ),
+                    const SizedBox(height: 16),
+                    buildTextField(
+                      controller: passwordController,
+                      label: 'Senha',
+                      icon: Icons.lock,
+                      obscureText: true,
+                      key: const Key('textFieldSigninSenha'),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        String email = emailController.text;
+                        String password = passwordController.text;
+                        authProvider.signIn(email, password).then(
+                          (response) {
+                            if (response) {
+                              Navigator.pushNamed(context, Routes.HOME);
+                            }
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32.0,
+                          vertical: 12.0,
+                        ),
+                      ),
+                      child: const Text("Acessar"),
+                    ),
+                    if (message != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          message,
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, Routes.SIGNUP);
+                      },
+                      child: const Text(
+                        "Ainda não tenho cadastro!",
+                        style: TextStyle(color: Colors.purple),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            child: TextField(
-              key: const Key('textFieldSigninSenha'),
-              controller: passwordController,
-              decoration: const InputDecoration(
-                label: Text("senha"),
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              String email = emailController.text;
-              String password = passwordController.text;
-              authProvider.signIn(email, password).then(
-                    (response) => {
-                      if (response) Navigator.pushNamed(context, Routes.HOME)
-                    },
-                  );
-            },
-            child: const Text("Acessar"),
-          ),
-          if (message != null) Text(message),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, Routes.SIGNUP);
-            },
-            child: const Text("Ainda não tenho cadastro!"),
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
+    required Key key,
+  }) {
+    return TextField(
+      key: key,
+      controller: controller,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.purple),
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.purple),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.purple),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.purpleAccent),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+      ),
+      obscureText: obscureText,
     );
   }
 }

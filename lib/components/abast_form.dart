@@ -13,16 +13,13 @@ class AbastForm extends StatelessWidget {
 
   Future<LocationData?> getLocation() async {
     Location location = Location();
-    bool serviceEnabled;
-    PermissionStatus permissionStatus;
-
-    serviceEnabled = await location.serviceEnabled();
+    bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) return null;
     }
 
-    permissionStatus = await location.hasPermission();
+    PermissionStatus permissionStatus = await location.hasPermission();
     if (permissionStatus == PermissionStatus.denied) {
       permissionStatus = await location.requestPermission();
       if (permissionStatus != PermissionStatus.granted) return null;
@@ -31,54 +28,68 @@ class AbastForm extends StatelessWidget {
     return location.getLocation();
   }
 
+  void saveAbastecimento(BuildContext context, AbastProvider abastProvider) {
+    double valorTotal = double.parse(valorTotalController.text);
+    double quantLitros = double.parse(quantidadeController.text);
+    int quilometragem = int.parse(quilometragemController.text);
+
+    final abast = Abastecimento(valorTotal, quantLitros, quilometragem);
+    abastProvider.insert(abast);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final abastProvider = context.watch<AbastProvider>();
-    final insert = abastProvider.insert;
 
     return SizedBox(
       child: Column(
         children: [
-          TextField(
+          buildTextField(
             controller: valorTotalController,
-            decoration: const InputDecoration(
-              hintText: 'Valor total (R\$)',
-            ),
+            hintText: 'Valor total (R\$)',
           ),
-          TextField(
+          buildTextField(
             controller: quantidadeController,
-            decoration: const InputDecoration(
-              hintText: 'Quantidade de litros (l)',
-            ),
+            hintText: 'Quantidade de litros (l)',
           ),
-          TextField(
+          buildTextField(
             controller: quilometragemController,
-            decoration: const InputDecoration(
-              hintText: 'Quilometragem (km)',
-            ),
+            hintText: 'Quilometragem (km)',
           ),
           ElevatedButton(
-            onPressed: () {
-              double valorTotal = double.parse(valorTotalController.text);
-              double quantLitros = double.parse(quantidadeController.text);
-              int quilometragem = int.parse(quilometragemController.text);
-              final abast =
-                  Abastecimento(valorTotal, quantLitros, quilometragem);
-              // addAbast(abast);
-              insert(abast);
-              Navigator.of(context).pop();
-            },
+            onPressed: () => saveAbastecimento(context, abastProvider),
             child: const Text("Salvar"),
           ),
-          FutureBuilder(
+          FutureBuilder<LocationData?>(
             future: getLocation(),
             builder: (context, snapshot) {
-              return Text(
-                '${snapshot.data?.latitude} ${snapshot.data?.longitude}',
-              );
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return const Text('Erro ao obter localização');
+              } else if (snapshot.hasData) {
+                return Text(
+                  'Latitude: ${snapshot.data?.latitude}, Longitude: ${snapshot.data?.longitude}',
+                );
+              } else {
+                return const Text('Localização não disponível');
+              }
             },
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
       ),
     );
   }

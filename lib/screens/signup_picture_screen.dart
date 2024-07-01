@@ -11,45 +11,59 @@ class SignUpPictureScreen extends StatefulWidget {
 class _SignUpPictureScreenState extends State<SignUpPictureScreen> {
   late CameraController _controller;
 
-  Future<void>? _initializeControllerCamera() async {
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllerCamera();
+  }
+
+  Future<void> _initializeControllerCamera() async {
     try {
       var cameras = await availableCameras();
       CameraDescription camera = cameras.first;
       _controller = CameraController(camera, ResolutionPreset.medium);
-      return _controller.initialize();
+      await _controller.initialize();
+      if (mounted) {
+        setState(() {});
+      }
     } catch (e) {
-      return Future.value();
+      print('Error initializing camera: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _initializeControllerCamera(),
-        builder: (context, snapshot) {
-          var connState = snapshot.connectionState;
-          if (connState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+      appBar: AppBar(
+        title: const Text('Capture a Picture'),
+        backgroundColor: Colors.purple,
       ),
-      floatingActionButton: IconButton(
-        icon: const Icon(Icons.camera),
+      body: _controller != null && _controller.value.isInitialized
+          ? CameraPreview(_controller)
+          : const Center(
+              child: CircularProgressIndicator(),
+            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.purple,
         onPressed: () async {
           try {
-            // _initializeControllerCamera();
-            XFile file = await _controller.takePicture();
-            Navigator.of(context).pop(file.path);
+            if (_controller != null && _controller.value.isInitialized) {
+              XFile file = await _controller.takePicture();
+              Navigator.of(context).pop(file.path);
+            }
           } catch (e) {
-            print(e);
+            print('Error taking picture: $e');
           }
         },
-        ),
+        child: const Icon(Icons.camera),
+      ),
     );
   }
 }

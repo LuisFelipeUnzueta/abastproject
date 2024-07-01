@@ -19,64 +19,70 @@ class _SignupScreenState extends State<SignupScreen> {
   String? email;
   String? password;
 
-  // final emailController = TextEditingController();
-  // final passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = context.watch<AuthProvider>();
     String? message = authProvider.message;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Cadastro'),
+        backgroundColor: Colors.purple,
+      ),
       body: Center(
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              imagePath != null
-                  ? Stack(
-                      children: [
-                        Image.file(
-                          width: 200,
-                          height: 200,
-                          File(imagePath!),
-                        ),
-                        IconButton(
-                          onPressed: () {
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                imagePath != null
+                    ? Stack(
+                        children: [
+                          Image.file(
+                            File(imagePath!),
+                            width: 200,
+                            height: 200,
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  imagePath = null;
+                                });
+                              },
+                              icon: const Icon(Icons.delete),
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      )
+                    : IconButton(
+                        onPressed: () async {
+                          Object? result = await Navigator.of(context)
+                              .pushNamed(Routes.SIGNUPPICTURE);
+                          if (result != null) {
                             setState(() {
-                              imagePath = null;
+                              imagePath = result as String;
                             });
-                          },
-                          icon: const Icon(Icons.delete),
-                        )
-                      ],
-                    )
-                  : IconButton(
-                      onPressed: () async {
-                        Object? result = await Navigator.of(context)
-                            .pushNamed(Routes.SIGNUPPICTURE);
-                        if (result != null) {
-                          setState(() {
-                            imagePath = result as String;
-                          });
-                        }
-                      },
-                      icon: const Icon(Icons.camera_alt),
-                    ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 10,
-                ),
-                child: TextFormField(
+                          }
+                        },
+                        icon: const Icon(Icons.camera_alt),
+                        color: Colors.purple,
+                      ),
+                const SizedBox(height: 24),
+                TextFormField(
                   onChanged: (value) {
                     email = value;
                   },
                   decoration: const InputDecoration(
-                      icon: Icon(Icons.email),
-                      hintText: 'Informe o email para cadastro.',
-                      labelText: 'Email'),
+                    icon: Icon(Icons.email, color: Colors.purple),
+                    hintText: 'Informe o email para cadastro.',
+                    labelText: 'Email',
+                  ),
                   validator: (value) {
                     if (value == null ||
                         value.isEmpty ||
@@ -86,52 +92,66 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null;
                   },
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                child: TextFormField(
+                const SizedBox(height: 16),
+                TextFormField(
                   onChanged: (value) {
                     password = value;
                   },
-                  // controller: ,
+                  obscureText: true,
                   decoration: const InputDecoration(
-                      icon: Icon(Icons.key),
-                      hintText: 'Informe uma senha para cadastro.',
-                      labelText: 'Senha'),
+                    icon: Icon(Icons.lock, color: Colors.purple),
+                    hintText: 'Informe uma senha para cadastro.',
+                    labelText: 'Senha',
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty || value.length < 6) {
-                      return 'Informe uma senha válido!';
+                      return 'Informe uma senha válida (mínimo 6 caracteres)!';
                     }
                     return null;
                   },
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    authProvider.signUp(email!, password!).then((sucesso) {
-                      if (sucesso) {
-                        try {
-                          var storage = FirebaseStorage.instance;
-                          var reference = storage.ref();
-                          var fileReference = reference.child("$email.jpg");
-                          var imageFile = File(imagePath!);
-                          fileReference.putFile(imageFile);
-                        } on FirebaseException catch (e) {
-                          print('Erro FirebaseStorage: ${e.message}');
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      authProvider.signUp(email!, password!).then((success) {
+                        if (success) {
+                          try {
+                            var storage = FirebaseStorage.instance;
+                            var reference = storage.ref();
+                            var fileReference = reference.child('$email.jpg');
+                            var imageFile = File(imagePath!);
+                            fileReference.putFile(imageFile);
+                          } on FirebaseException catch (e) {
+                            print('Erro FirebaseStorage: ${e.message}');
+                          }
+                          Navigator.pushReplacementNamed(context, Routes.HOME);
+                        } else {
+                          // Handle error message
                         }
-                        Navigator.pushReplacementNamed(context, Routes.HOME);
-                      } else {
-                        // Pegar a mensagem de erro
-                      }
-                    });
-                  }
-                },
-                child: const Text("Cadastrar"),
-              ),
-              if (message != null) Text(message),
-            ],
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32.0, vertical: 12.0),
+                  ),
+                  child: const Text("Cadastrar"),
+                ),
+                if (message != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      message,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
